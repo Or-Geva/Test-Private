@@ -1,0 +1,38 @@
+name: Test
+on:
+  push:
+    branches:
+      - "**"
+    tags-ignore:
+      - "**"
+  # pull_request:
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu, windows, macOS]
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v4
+
+      - name: Go Cache
+        uses: actions/cache@v3
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.22.x
+          cache: false
+
+      - name: Configure private token
+        env:
+          GOPRIVATE: github.com
+        run: |
+          go build .
