@@ -35,4 +35,5 @@ jobs:
         env:
           GOPRIVATE: github.com
         run: |
+          git config --global url.https://${{ secrets.ACCESS_TOKEN }}@github.com/.insteadOf https://github.com/
           go build .
